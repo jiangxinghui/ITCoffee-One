@@ -29,7 +29,7 @@ Now, development started, and vscode+arduino modbus, is ready.
 3. IO(future)
 4.  PCB board file added
    support arduino nano.
-
+   zero cross circuit removed , moc3061 added . and software will be changed soon.
 
 6. Android iOS APP(developing)
   maui bluetooth app developing.
@@ -84,7 +84,8 @@ ITCoffee One Lite 是一个 DIY 咖啡机项目，基于德龙 ECO310 咖啡机�
 1. 加热部分控制
 2. 压力部分控制
 3. pcb板子
-4. Android IOS APP
+  pcb 文件加入了。 目前移除了过零检测电路，代之以moc3061. 软件部分随后修改。
+5. Android IOS APP
 
 ## 贡献
 
