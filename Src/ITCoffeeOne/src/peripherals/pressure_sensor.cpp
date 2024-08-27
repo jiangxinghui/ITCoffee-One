@@ -15,7 +15,7 @@ float currentPressure;
 
 void adsInit(void) {
 
-  Wire.begin(); //added by itcoffee
+  Wire.begin(); //added by itcoffee.default using 
 
 
    ADS.begin();
@@ -38,7 +38,7 @@ float getPressure(void) {  //returns sensor pressure data
 
   if(!ADS.isConnected())
   {
-    //Serial.println("not connected");
+    Serial.println("not connected");
 
     return -1;
   }

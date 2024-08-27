@@ -10,7 +10,7 @@ static inline void pinInit( void )
 {
   pinMode(brewPin,INPUT_PULLUP);
 
-pinMode(HeaterPin,OUTPUT);
+pinMode(Heater_1_Pin,OUTPUT);
 
 
 pinMode(LED_BUILTIN,OUTPUT);

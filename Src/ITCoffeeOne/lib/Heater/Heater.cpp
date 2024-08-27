@@ -15,7 +15,7 @@
     
 
 
-Heater::Heater(int hpwr)
+Heater::Heater(int hpwr,int Heater_Standby_Second)
 
 {
 
@@ -28,7 +28,7 @@ maxHeatTemperature=120;
 
 heaterState=Idle;
 lastActivityTime=millis();
-
+this->Heater_Standby_Second=Heater_Standby_Second;
 
 }
 
@@ -159,7 +159,7 @@ void Heater::justDoCoffee(float targetTemperature,float temperature, const bool 
   } else { //if brewState == false
 
 
-if(millis()-lastActivityTime>30000)  //30seconds
+if(millis()-lastActivityTime>((unsigned long)Heater_Standby_Second*1000))  //30seconds
 heaterState=StandBy;
 else
 heaterState=Idle;

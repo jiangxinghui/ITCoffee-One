@@ -7,6 +7,8 @@
 #include "predictive_weight.h"
 #include "system_state.h"
 #include "eeprom_data/eeprom_data.h"
+
+
 #ifdef STM32_BOARD
 #else
 
@@ -36,6 +38,8 @@ unsigned long  lastActivityTime=0;
 SystemState systemState;
 
  float pumpPct_Output;
+
+
 
 //modbus------------------
 
@@ -104,7 +108,7 @@ counter=3000;
 
 }
 static void cpsInit() {
-  int cps = getCPS();
+ // int cps = getCPS();
   // if (cps > 110) { // double 60 Hz
   //   powerLineFrequency = 60u;
   // } else if (cps > 80) { // double 50 Hz
@@ -128,6 +132,8 @@ Serial.begin(9600);
 
 
 #endif
+
+
 
 //pin init
 pinInit();
@@ -164,8 +170,8 @@ coils[0]=false;
 coils[1]=false;
 
 holdingRegisters[0]=93*10;  //temp setpoint
-holdingRegisters[3]=9*10;  //pressure setpoint
-holdingRegisters[7]=15;  //flow setpoint
+holdingRegisters[3]=12*10;  //pressure setpoint
+holdingRegisters[7]=12;  //flow setpoint
  modbus.configureHoldingRegisters(holdingRegisters,10);
 
  modbus.configureCoils(coils, 2);                       // bool array of coil values, number of coils
@@ -235,7 +241,7 @@ static void fillBoilerUntilThreshod(unsigned long elapsedTime) {
 
   //lcdShowPopup("Filling boiler!");
   //openValve();
-  setPumpToRawValue(35);
+  setPumpPowerPercentage(35);
 }
 
 
@@ -307,10 +313,10 @@ static void sensorsReadTemperature(void) {
  //currentState.waterTemperature = thermocoupleRead_2() ;  //changed by xhjiang
 
 
- //DebugSerial.println(currentState.temperature);
 
   thermoTimer = millis() + GET_KTYPE_READ_EVERY;
-
+Serial.print("temperature value:");
+  Serial.println( currentState.temperature);
 
  }
 
@@ -495,7 +501,7 @@ static void brewDetect(void)
 
   // myHeater.loop();
 
-   digitalWrite(HeaterPin,myHeater.heaterPinState);
+   digitalWrite(Heater_1_Pin,myHeater.heaterPinState);
 
 
 
@@ -561,13 +567,13 @@ holdingRegisters[6]=pumpPct_Output*100;
 
 
 //holdingRegisters[7]= flow setpoint
-Serial.print("flow setpoint:");
-Serial.println(holdingRegisters[7]);
+//Serial.print("flow setpoint:");
+//Serial.println(holdingRegisters[7]);
 
 
 holdingRegisters[8]=(uint16_t)(currentState.smoothedPumpFlow*10);
-Serial.print("flow:");
-Serial.println(currentState.smoothedPumpFlow);
+//Serial.print("flow:");
+//Serial.println(currentState.smoothedPumpFlow);
 
 holdingRegisters[9]=brewState();
 

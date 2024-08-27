@@ -50,13 +50,13 @@ bool poweroffMode = false;
 bool externalControlMode = false;
 
 unsigned long  lastActivityTime;
-
+int Heater_Standby_Second;
 
 
 
 //char Status[256];
 
-  Heater(int hpwr);
+  Heater(int hpwr,int standby_second=120);
 
 
 void SetOutputLimit(double min ,double max);

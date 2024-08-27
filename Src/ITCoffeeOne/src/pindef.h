@@ -70,25 +70,30 @@
 #else
 //arduino uno pwm pin 3,5,6,9,10,11
 
-#define HeaterPin 15  //nano A1
+#define valve_ctl_pin 11
+#define Heater_1_Pin A0  //nano A0
+#define Heater_2_Pin A1  //nano A1
+
+
+#define thermoDO      12  //nano d12
+
+#define thermoCS      10   //nano d10
+#define thermoCLK     13   //nano d13
 
 
 
-#define thermoDO      10  //nano d10
+#define bt_txPin       4   //nano d4
+#define bt_rxPin     5 //nano d5
 
-#define thermoCS      9   //nano d9
-#define thermoCLK     8   //nano d8
+#define brewPin       6 //nano d6
+#define steamPin    7 //D7
+#define brew_led    8
+#define steam_led   9 
 
+#define zcPin         2 //nano d2
 
+#define dimmerPin     3 //nano d3   ,dimmer module for pump control
 
-#define bt_txPin       11
-#define bt_rxPin     12
-
-#define brewPin       7
-#define zcPin         2
-
-#define dimmerPin     3
-#define VR A0
 
 
 

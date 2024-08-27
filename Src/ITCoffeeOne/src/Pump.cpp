@@ -3,20 +3,27 @@
 
 
 #include "utils.h"
-#include "PSM.h"
 #include "pindef.h"
 #include "internal_watchdog.h"
 
  uint8_t PUMP_RANGE = 100;
- #define ZC_MODE    FALLING
-PSM psm(zcPin, dimmerPin, PUMP_RANGE, ZC_MODE, 1, 6);
 
 
 float flowPerClickAtZeroBar = 0.27f;
 int maxPumpClicksPerSecond = 50;
 float fpc_multiplier = 1.2f;
 bool zcup=false;
+unsigned long heatCurrentTime = 0, heatLastTime = 0;
 
+unsigned long time_now;
+#define HEATER_INTERVAL 1000
+
+
+float pumpcycles; // the number of millis out of 1000 for the current pump (percent * 10)
+
+  volatile long _counter;
+
+  
 float pressureInefficiencyCoefficient[7] ={
   0.045f,
   0.015f,
@@ -43,6 +50,56 @@ const float pumpFlowAtZero) {
 
 
 
+}
+
+void setPumpPowerPercentage(float power_in_100_percent)
+{
+    if (power_in_100_percent < 0.0) {
+    power_in_100_percent = 0.0;
+  }
+  if (power_in_100_percent > 100) {
+    power_in_100_percent = 100;
+  }
+  pumpcycles = power_in_100_percent*PUMP_INTERVAL/100;  
+}
+
+long getAndResetClickCounter(void) {
+  long counter = _counter;
+  _counter=0;
+  return counter;
+}
+
+void setPumpOff()
+{
+  setPumpPowerPercentage(0);
+}
+
+void turnHeatElementOnOff(bool on) {
+  digitalWrite(Heater_1_Pin, on); //turn pin high , change to main.cpp
+
+  
+}
+
+void update() {
+   time_now=millis();
+  heatCurrentTime = time_now;
+
+   if (heatCurrentTime - heatLastTime >= HEATER_INTERVAL or heatLastTime > heatCurrentTime) { //second statement prevents overflow errors
+  
+    // begin cycle
+  
+    turnHeatElementOnOff(1);  //
+    heatLastTime = heatCurrentTime;
+  }
+  if (heatCurrentTime - heatLastTime >= pumpcycles) {
+  
+
+    
+    turnHeatElementOnOff(0);
+  }
+
+  
+    
 }
 
 
@@ -110,58 +167,16 @@ float setPumpPressure(const float targetPressure, const float flowRestriction,
 //added by itcoffee
 if(pumpPct<0)pumpPct=0;
 
-   setPumpToRawValue((uint8_t)(pumpPct * PUMP_RANGE));
+   setPumpPowerPercentage(pumpPct );
  return pumpPct;
  
 
 }
 
-void setPumpOff(void) {
-  psm.set(0);
-  
-}
 
-void setPumpFullOn(void) {
-  psm.set(PUMP_RANGE);
-}
 
-void setPumpToRawValue(const uint8_t val) {
-  psm.set(val);
-}
 
-void pumpStopAfter(const uint8_t val) {
-  psm.stopAfter(val);
-}
 
-long getAndResetClickCounter(void) {
-  long counter = psm.getCounter();
-  psm.resetCounter();
-  return counter;
-}
-
-int getCPS(void) {
- // watchdogReload();
-
-  unsigned int cps;
- 
- 
- cps=   psm.cps();
-
- // watchdogReload();
- 
-  if (cps > 80u) {
-    psm.setDivider(2);
-    psm.initTimer(cps > 110u ? 60u : 50u);
-  }
-  else {
-    psm.initTimer(cps > 55u ? 60u : 50u);
-  }
-  return cps;
-}
-
-void pumpPhaseShift(void) {
-  psm.shiftDividerCounter();
-}
 
 // Models the flow per click, follows a compromise between the schematic and recorded findings
 // plotted: https://www.desmos.com/calculator/eqynzclagu
@@ -212,7 +227,7 @@ float setPumpFlow(const float targetFlow, const float pressureRestriction, float
 
     //否则，不管压力约束，在当前压力情况下达到目标流量的泵工作perct
    pumpPct = getClicksPerSecondForFlow(targetFlow, currentPressure) / (float)maxPumpClicksPerSecond;
-    setPumpToRawValue(pumpPct * PUMP_RANGE);
+    setPumpPowerPercentage(pumpPct );
   }
 
   return pumpPct;
